@@ -191,9 +191,6 @@
   .rounded-lg {
     border-radius: var(--radius-lg);
   }
-  .bg-blue-500 {
-    background-color: var(--color-blue-500);
-  }
   .bg-green-500 {
     background-color: var(--color-green-500);
   }
