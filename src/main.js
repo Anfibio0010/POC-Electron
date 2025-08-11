@@ -1,5 +1,12 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('node:path');
+const { app, BrowserWindow, ipcMain } = require('electron');
+
+const mainWindow = new BrowserWindow({
+  webPreferences: {
+    nodeIntegration: true,    // para poder usar require en el renderer
+    contextIsolation: false,  // debe estar desactivado para nodeIntegration = true
+  }
+});
 
 // Add hot reload for development
 if (process.env.NODE_ENV === 'development') {
@@ -15,8 +22,8 @@ const createWindow = () => {
     width: 1200,
     height: 800,
     webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true,
+      nodeIntegration: true,
+      contextIsolation: false,
       preload: path.join(__dirname, 'preload.js'),
     },
   });
@@ -45,10 +52,18 @@ app.whenReady().then(() => {
       createWindow();
     }
   });
+  if (process.env.ELECTRON_START_URL) {
+    mainWindow.loadURL(process.env.ELECTRON_START_URL);
+  }else {
+    mainWindow.loadFile(path.join(__dirname, "build", "index.html"));
+  }
 });
+
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
 });
+
+mainWindow.loadURL(`file://${__dirname}/build/index.html`);

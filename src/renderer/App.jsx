@@ -1,15 +1,24 @@
 import { useState, useEffect } from 'react';
-
+const Store = require('electron-store');
+const store = new Store();
 function App() {
   const [versions, setVersions] = useState({});
-  const [notes, setNotes] = useState([
+  const [notes, setNotes] = useState(() => {
+    try {
+    const notasGuardadas = store.get('misNotas');
+    if (notasGuardadas) {
+      return notasGuardadas;
+    }
+  } catch (error) {
+    console.error("Error leyendo electron-store:", error);
+  }
+  return [
     { id: 1, title: 'Welcome', content: 'Welcome to your notes app!' },
-    {
-      id: 2,
-      title: 'Sample Note',
-      content: 'This is a sample note with some content.',
-    },
-  ]);
+    { id: 2, title: 'Sample Note', content: 'This is a sample note with some content.' },
+  ];
+  }
+    
+  );
   const [newNote, setNewNote] = useState({ title: '', content: '' });
 
   useEffect(() => {
@@ -21,7 +30,20 @@ function App() {
         electron: window.versions.electron(),
       });
     }
+    
   }, []);
+  // carga notas de local stograge
+   useEffect(() => {
+    try {
+      store.set('misNotas', notes);
+    } catch (error) {
+      console.error("Error guardando en electron-store:", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    notes.set("misNotas", notes);
+  }, [notes]);
 
   const addNote = () => {
     if (newNote.title.trim() && newNote.content.trim()) {
@@ -37,6 +59,7 @@ function App() {
 
   const deleteNote = (id) => {
     setNotes(notes.filter((note) => note.id !== id));
+
   };
 
   return (
