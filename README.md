@@ -1,5 +1,5 @@
 Notas nuestras:
-con: pnpm run dev:hot se ejecuta el proyecto con hot reload, lo que nos permite ver los cambios en tiempo real
+con: pnpm run dev:react se ejecuta todo con hot reload
 
 # Electron POC
 
