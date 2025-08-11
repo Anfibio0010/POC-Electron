@@ -138,5 +138,8 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
+# Tailwind CSS build output
 dist/*
 dist
+
+.vscode
