@@ -1,4 +1,5 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
+const path = require('node:path');
 
 // Add hot reload for development
 if (process.env.NODE_ENV === 'development') {
@@ -11,15 +12,22 @@ if (process.env.NODE_ENV === 'development') {
 
 const createWindow = () => {
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1200,
+    height: 800,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js'),
     },
   });
 
-  win.loadFile('ui/index.html');
+  // In development, load from Vite dev server
+  if (process.env.NODE_ENV === 'development') {
+    win.loadURL('http://localhost:5174');
+  } else {
+    // In production, load the built files
+    win.loadFile('ui/dist/index.html');
+  }
 
   // Open DevTools in development
   if (process.env.NODE_ENV === 'development') {
@@ -27,6 +35,20 @@ const createWindow = () => {
   }
 };
 
+// IPC handlers
+ipcMain.handle('ping', () => 'pong');
+
 app.whenReady().then(() => {
   createWindow();
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow();
+    }
+  });
+});
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
 });

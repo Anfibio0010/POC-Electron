@@ -182,6 +182,9 @@
   .mb-4 {
     margin-bottom: calc(var(--spacing) * 4);
   }
+  .contents {
+    display: contents;
+  }
   .max-w-md {
     max-width: var(--container-md);
   }
