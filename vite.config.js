@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   base: './', // Important for Electron to load assets correctly
   build: {
-    outDir: 'ui/dist',
+    outDir: './dist',
     emptyOutDir: true,
   },
   server: {
