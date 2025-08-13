@@ -1,23 +1,23 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
-const path = require('node:path');
+import { app, BrowserWindow, ipcMain } from 'electron';
+import path from 'node:path';
+import electronReload from 'electron-reload';
 
 // Add hot reload for development
 if (process.env.NODE_ENV === 'development') {
-  const path = require('path');
-  require('electron-reload')(__dirname + '/../', {
+  electronReload(__dirname + '/../', {
     electron: path.join(__dirname, '..', 'node_modules', '.bin', 'electron'),
     hardResetMethod: 'exit',
   });
 }
 
-const createWindow = () => {
+const createWindow = (): void => {
   const win = new BrowserWindow({
     width: 1200,
     height: 800,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, 'preload.ts'),
     },
   });
 
@@ -36,7 +36,7 @@ const createWindow = () => {
 };
 
 // IPC handlers
-ipcMain.handle('ping', () => 'pong');
+ipcMain.handle('ping', (): string => 'pong');
 
 app.whenReady().then(() => {
   createWindow();

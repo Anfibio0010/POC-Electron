@@ -1,8 +1,26 @@
 import { useState, useEffect } from 'react';
 
+// Define types
+interface VersionsInfo {
+  node: string;
+  chrome: string;
+  electron: string;
+}
+
+interface Note {
+  id: number;
+  title: string;
+  content: string;
+}
+
+interface NewNote {
+  title: string;
+  content: string;
+}
+
 function App() {
-  const [versions, setVersions] = useState({});
-  const [notes, setNotes] = useState([
+  const [versions, setVersions] = useState<VersionsInfo | {}>({});
+  const [notes, setNotes] = useState<Note[]>([
     { id: 1, title: 'Welcome', content: 'Welcome to your notes app!' },
     {
       id: 2,
@@ -10,7 +28,7 @@ function App() {
       content: 'This is a sample note with some content.',
     },
   ]);
-  const [newNote, setNewNote] = useState({ title: '', content: '' });
+  const [newNote, setNewNote] = useState<NewNote>({ title: '', content: '' });
 
   useEffect(() => {
     // Get versions from preload script
@@ -19,13 +37,13 @@ function App() {
         node: window.versions.node(),
         chrome: window.versions.chrome(),
         electron: window.versions.electron(),
-      });
+      } as VersionsInfo);
     }
   }, []);
 
-  const addNote = () => {
+  const addNote = (): void => {
     if (newNote.title.trim() && newNote.content.trim()) {
-      const note = {
+      const note: Note = {
         id: Date.now(),
         title: newNote.title,
         content: newNote.content,
@@ -35,7 +53,7 @@ function App() {
     }
   };
 
-  const deleteNote = (id) => {
+  const deleteNote = (id: number) => {
     setNotes(notes.filter((note) => note.id !== id));
   };
 
@@ -54,9 +72,9 @@ function App() {
           {/* Version info */}
           {Object.keys(versions).length > 0 && (
             <div className="mt-4 text-sm text-gray-500 space-x-4">
-              <span>Node: {versions.node}</span>
-              <span>Chrome: {versions.chrome}</span>
-              <span>Electron: {versions.electron}</span>
+              <span>Node: {(versions as VersionsInfo).node}</span>
+              <span>Chrome: {(versions as VersionsInfo).chrome}</span>
+              <span>Electron: {(versions as VersionsInfo).electron}</span>
             </div>
           )}
         </div>

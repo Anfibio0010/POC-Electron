@@ -2,13 +2,13 @@
   "name": "POC-Electron",
   "version": "1.0.0",
   "description": "",
-  "main": "src/main.js",
+  "main": "src/main.ts",
   "scripts": {
-    "start": "electron .",
-    "dev": "cross-env NODE_ENV=development electron .",
-    "dev:watch": "cross-env NODE_ENV=development nodemon --exec electron . --watch src/ --watch ui/",
-    "dev:vite": "vite --config vite.config.js",
-    "dev:electron": "cross-env NODE_ENV=development nodemon --exec electron . --watch src/main.js --watch src/preload.js",
+    "start": "electron -r ts-node/register .",
+    "dev": "cross-env NODE_ENV=development electron -r ts-node/register .",
+    "dev:watch": "cross-env NODE_ENV=development nodemon --exec \"electron -r ts-node/register .\" --watch src/ --watch ui/",
+    "dev:vite": "vite --config vite.config.ts",
+    "dev:electron": "cross-env NODE_ENV=development nodemon --exec \"electron -r ts-node/register .\" --watch src/main.ts --watch src/preload.ts",
     "dev:react": "concurrently \"pnpm run dev:vite\" \"pnpm run dev:electron\" --names \"VITE,ELECTRON\" --prefix-colors \"blue,green\"",
     "build": "vite build",
     "build:electron": "pnpm run build && electron .",
@@ -21,6 +21,9 @@
   "license": "ISC",
   "packageManager": "pnpm@10.6.5",
   "devDependencies": {
+    "@types/node": "^24.2.1",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^5.0.0",
     "autoprefixer": "^10.4.21",
     "concurrently": "^8.2.2",
@@ -30,6 +33,8 @@
     "nodemon": "^3.1.10",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2",
     "vite": "^7.1.1"
   },
   "pnpm": {
