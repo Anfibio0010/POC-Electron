@@ -21,11 +21,11 @@ interface NewNote {
 function App() {
   const [versions, setVersions] = useState<VersionsInfo | {}>({});
   const [notes, setNotes] = useState<Note[]>([
-    { id: 1, title: 'Welcome', content: 'Welcome to your notes app!' },
+    { id: 1, title: 'Welcome', content: 'Bienvenido a la app de notas!' },
     {
       id: 2,
       title: 'Sample Note',
-      content: 'This is a sample note with some content.',
+      content: 'Esta es una nota de ejemplo con algo de contenido.',
     },
   ]);
   const [newNote, setNewNote] = useState<NewNote>({ title: '', content: '' });

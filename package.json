@@ -9,7 +9,7 @@
     "dev": "cross-env electron dist/src/main.js",
     "dev:watch": "cross-env nodemon --exec \"electron dist/src/main.js\" --watch dist/src/ --watch dist/ui/",
     "dev:vite": "vite --config vite.config.ts",
-    "dev:electron": "cross-env nodemon --exec \"electron dist/src/main.js\" --watch dist/src/main.js --watch dist/src/preload.js",
+    "dev:electron": "cross-env NODE_ENV=development nodemon --exec \"electron dist/src/main.js\" --watch dist/src/main.js --watch dist/src/preload.js",
     "dev:react": "concurrently \"pnpm run dev:vite\" \"pnpm run dev:electron\" --names \"VITE,ELECTRON\" --prefix-colors \"blue,green\"",
     "build": "vite build",
     "build:electron": "cross-env pnpm run build && electron .",
