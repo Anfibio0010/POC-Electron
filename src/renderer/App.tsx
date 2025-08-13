@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Nota } from './componentes/Nota.js'; // Import the Nota component
 
 // Define types
 interface VersionsInfo {
@@ -56,7 +57,18 @@ function App() {
   const deleteNote = (id: number) => {
     setNotes(notes.filter((note) => note.id !== id));
   };
-
+  const notasEnComponente = notes.map((nota) => {
+    return (
+      <Nota
+        key={nota.id}
+        id={nota.id}
+        title={nota.title}
+        content={nota.content}
+        editarClick={() => console.log(`Edit note ${nota.id}`)}
+        eliminarClick={deleteNote}
+      />
+    );
+  });
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-4xl mx-auto">
@@ -114,26 +126,7 @@ function App() {
 
         {/* Notes grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {notes.map((note) => (
-            <div
-              key={note.id}
-              className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200"
-            >
-              <div className="flex justify-between items-start mb-3">
-                <h3 className="text-lg font-semibold text-gray-800 truncate flex-1">
-                  {note.title}
-                </h3>
-                <button
-                  onClick={() => deleteNote(note.id)}
-                  className="text-red-500 hover:text-red-700 ml-2 p-1"
-                  title="Delete note"
-                >
-                  ✕
-                </button>
-              </div>
-              <p className="text-gray-600 line-clamp-4">{note.content}</p>
-            </div>
-          ))}
+          {notasEnComponente}
         </div>
 
         {notes.length === 0 && (
