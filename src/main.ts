@@ -1,5 +1,11 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { fileURLToPath } from 'url';
 import path from 'node:path';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+import { app, BrowserWindow, ipcMain } from 'electron';
+
+
 
 const createWindow = (): void => {
   const win = new BrowserWindow({
@@ -17,7 +23,7 @@ const createWindow = (): void => {
     win.loadURL('http://localhost:5174');
   } else {
     // In production, load the built files
-    win.loadFile('ui/dist/index.html');
+    win.loadFile(path.join(__dirname, '../../index.html'));
   }
 
   // Open DevTools in development
