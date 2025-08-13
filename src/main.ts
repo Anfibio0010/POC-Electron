@@ -1,14 +1,5 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'node:path';
-import electronReload from 'electron-reload';
-
-// Add hot reload for development
-if (process.env.NODE_ENV === 'development') {
-  electronReload(__dirname + '/../', {
-    electron: path.join(__dirname, '..', 'node_modules', '.bin', 'electron'),
-    hardResetMethod: 'exit',
-  });
-}
 
 const createWindow = (): void => {
   const win = new BrowserWindow({
