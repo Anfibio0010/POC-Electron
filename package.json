@@ -14,6 +14,7 @@
     "build": "vite build",
     "build:electron": "cross-env pnpm run build && electron .",
     "build-css": "tailwindcss -i ./src/renderer/index.css -o ./ui/dist/styles.css",
+    "build:all": "pnpm tsc && pnpm tsc -p tsconfig.preload.json",
     "watch-css": "tailwindcss -i ./src/renderer/index.css -o ./ui/dist/styles.css --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

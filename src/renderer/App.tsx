@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Nota } from './componentes/Nota.js'; // Import the Nota component
+import { Nota } from './componentes/Nota';
+import AddNota from './componentes/AddNota';
 
 // Define types
 interface VersionsInfo {
@@ -21,14 +22,7 @@ interface NewNote {
 
 function App() {
   const [versions, setVersions] = useState<VersionsInfo | {}>({});
-  const [notes, setNotes] = useState<Note[]>([
-    { id: 1, title: 'Welcome', content: 'Bienvenido a la app de notas!' },
-    {
-      id: 2,
-      title: 'Sample Note',
-      content: 'Esta es una nota de ejemplo con algo de contenido.',
-    },
-  ]);
+  const [notes, setNotes] = useState<Note[]>([]);
   const [newNote, setNewNote] = useState<NewNote>({ title: '', content: '' });
 
   useEffect(() => {
@@ -40,22 +34,31 @@ function App() {
         electron: window.versions.electron(),
       } as VersionsInfo);
     }
+    
+    cargarNotas();
   }, []);
 
-  const addNote = (): void => {
-    if (newNote.title.trim() && newNote.content.trim()) {
-      const note: Note = {
-        id: Date.now(),
-        title: newNote.title,
-        content: newNote.content,
-      };
-      setNotes([...notes, note]);
-      setNewNote({ title: '', content: '' });
+  const cargarNotas = async () => {
+    try {
+      const notas = await window.notasAPI.leerNotas();
+      
+      setNotes(
+        notas.map((n, idx) => ({
+          id: Date.now() + idx,
+          title: n.titulo,
+          content: n.contenido,
+        }))
+      );
+    } catch (e) {
+      setNotes([]);
     }
   };
 
+  
+
   const deleteNote = (id: number) => {
     setNotes(notes.filter((note) => note.id !== id));
+    
   };
   const notasEnComponente = notes.map((nota) => {
     return (
@@ -72,7 +75,7 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-4xl mx-auto">
-        {/* Header */}
+        
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-bold text-gray-800 mb-2">
             📝 Notes App
@@ -81,7 +84,7 @@ function App() {
             Built with Electron + React + Vite + Tailwind
           </p>
 
-          {/* Version info */}
+          
           {Object.keys(versions).length > 0 && (
             <div className="mt-4 text-sm text-gray-500 space-x-4">
               <span>Node: {(versions as VersionsInfo).node}</span>
@@ -91,40 +94,10 @@ function App() {
           )}
         </div>
 
-        {/* Add new note form */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">
-            Add New Note
-          </h2>
-          <div className="space-y-4">
-            <input
-              type="text"
-              placeholder="Note title..."
-              value={newNote.title}
-              onChange={(e) =>
-                setNewNote({ ...newNote, title: e.target.value })
-              }
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-            />
-            <textarea
-              placeholder="Note content..."
-              value={newNote.content}
-              onChange={(e) =>
-                setNewNote({ ...newNote, content: e.target.value })
-              }
-              rows={4}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"
-            />
-            <button
-              onClick={addNote}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors duration-200 font-medium"
-            >
-              Add Note
-            </button>
-          </div>
-        </div>
+        
+        <AddNota onNotaAgregada={cargarNotas} />
 
-        {/* Notes grid */}
+        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {notasEnComponente}
         </div>

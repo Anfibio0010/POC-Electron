@@ -14,8 +14,10 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": false,
-    "baseUrl": "."
+    "baseUrl": ".",
+    
   },
+  
   "include": ["src", "ui", "vite.config.ts"],
   "exclude": ["node_modules", "dist"]
 }

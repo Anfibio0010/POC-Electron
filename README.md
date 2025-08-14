@@ -1,5 +1,7 @@
 Notas nuestras:
+antes de runearlo, tira pnpm run build:all, para compilar todo
 con: pnpm run dev:react se ejecuta todo con hot reload
+
 
 # Electron POC
 
