@@ -38,11 +38,23 @@ const createWindow = (): void => {
 // Carpeta donde se guardan las notas
 const notasDir = path.join(__dirname, '../../notas');
 
+
 // Guardar nota
 ipcMain.handle('guardar-nota', async (_event, { titulo, contenido }) => {
   const filePath = path.join(notasDir, `${titulo}.txt`);
   await fsp.writeFile(filePath, contenido, 'utf8');
   return true;
+});
+
+// Eliminar nota
+ipcMain.handle('eliminar-nota', async (_event, { titulo }) => {
+  const filePath = path.join(notasDir, `${titulo}.txt`);
+  try {
+    await fsp.unlink(filePath);
+    return true;
+  } catch (e) {
+    return false;
+  }
 });
 
 // Leer todas las notas

@@ -59,9 +59,11 @@ function App() {
 
   
 
-  const deleteNote = (id: number) => {
-    setNotes(notes.filter((note) => note.id !== id));
-    
+  const deleteNote = async (id: number) => {
+    const nota = notes.find((note) => note.id === id);
+    if (!nota) return;
+    const result = await window.notasAPI.eliminarNota(nota.title);
+    await cargarNotas();
   };
   const notasEnComponente = notes.map((nota) => {
     return (

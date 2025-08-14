@@ -11,6 +11,7 @@ interface Versions {
 interface NotasAPI {
   guardarNota: (titulo: string, contenido: string) => Promise<boolean>;
   leerNotas: () => Promise<Array<{ titulo: string; contenido: string }>>;
+  eliminarNota: (titulo: string) => Promise<boolean>;
 }
 
 
@@ -32,4 +33,5 @@ contextBridge.exposeInMainWorld('versions', {
 contextBridge.exposeInMainWorld('notasAPI', {
   guardarNota: (titulo: string, contenido: string) => ipcRenderer.invoke('guardar-nota', { titulo, contenido }),
   leerNotas: () => ipcRenderer.invoke('leer-notas'),
+  eliminarNota: (titulo: string) => ipcRenderer.invoke('eliminar-nota', { titulo }),
 });

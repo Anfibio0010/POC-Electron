@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/src/main.js",
+  
   "scripts": {
     "start": "cross-env electron dist/src/main.js",
     "start:electron": "cross-env pnpm tsc && electron dist/src/main.js",
