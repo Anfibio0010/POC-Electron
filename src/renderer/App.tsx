@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Nota } from './componentes/Nota';
 import AddNota from './componentes/AddNota';
+import { ToggleAdd } from './componentes/ToggleAdd';
 
 // Define types
 interface VersionsInfo {
@@ -22,8 +23,10 @@ interface NewNote {
 
 function App() {
   const [versions, setVersions] = useState<VersionsInfo | {}>({});
+  const [addBtn, setAddBtn] = useState(false);
   const [notes, setNotes] = useState<Note[]>([]);
   const [newNote, setNewNote] = useState<NewNote>({ title: '', content: '' });
+  const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
 
   useEffect(() => {
     // Get versions from preload script
@@ -75,27 +78,36 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-4xl mx-auto">
-        
-        <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">
-            📝 Notes App
+        {/* Header with toggle button layout from Componetizo */}
+        <div className="mb-8 grid grid-cols-[1fr_auto_1fr] items-center">
+          {/* Empty left spacer to allow perfect centering */}
+          <div></div>
+          <h1 className="text-4xl font-bold text-center text-gray-800">
+            📝 Nota Fácil
           </h1>
-          <p className="text-gray-600">
-            Built with Electron + React + Vite + Tailwind
-          </p>
-
-          
-          {Object.keys(versions).length > 0 && (
-            <div className="mt-4 text-sm text-gray-500 space-x-4">
-              <span>Node: {(versions as VersionsInfo).node}</span>
-              <span>Chrome: {(versions as VersionsInfo).chrome}</span>
-              <span>Electron: {(versions as VersionsInfo).electron}</span>
-            </div>
-          )}
+          <div className="justify-self-end">
+            <ToggleAdd addBtn={addBtn} setAddBtn={setAddBtn} />
+          </div>
         </div>
-
         
-        <AddNota onNotaAgregada={cargarNotas} />
+        {/* Version info from main branch */}
+        {Object.keys(versions).length > 0 && (
+          <div className="mb-4 text-center text-sm text-gray-500 space-x-4">
+            <span>Node: {(versions as VersionsInfo).node}</span>
+            <span>Chrome: {(versions as VersionsInfo).chrome}</span>
+            <span>Electron: {(versions as VersionsInfo).electron}</span>
+          </div>
+        )}
+        
+        {/* Add note section with toggle functionality */}
+        {addBtn && (
+          <div className="mb-5">
+            <AddNota onNotaAgregada={() => {
+              cargarNotas();
+              setAddBtn(false);
+            }} />
+          </div>
+        )}
 
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
