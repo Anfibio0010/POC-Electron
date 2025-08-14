@@ -5,7 +5,7 @@ import EditNota from './componentes/EditNota';
 import NotaModal from './componentes/NotaModal';
 import { ToggleAdd } from './componentes/ToggleAdd';
 
-// Define types
+
 interface VersionsInfo {
   node: string;
   chrome: string;
@@ -34,7 +34,7 @@ function App() {
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
 
   useEffect(() => {
-    // Get versions from preload script
+    
     if (window.versions) {
       setVersions({
         node: window.versions.node(),
@@ -116,7 +116,7 @@ function App() {
       </div>
     );
   });
-  // Animación de salida para AddNota
+  
   const handleOpenAddNota = () => {
     setAddBtn(true);
     setIsClosingAddNota(false);
@@ -127,7 +127,7 @@ function App() {
     setTimeout(() => {
       setAddBtn(false);
       setIsClosingAddNota(false);
-    }, 100); // Duración de la animación de salida
+    }, 100);
   };
 
   return (
@@ -162,7 +162,7 @@ function App() {
           </div>
         </div>
         
-        {/* Version info from main branch */}
+        
         {Object.keys(versions).length > 0 && (
           <div className="mb-4 text-center text-sm text-gray-500 space-x-4">
             <span>Node: {(versions as VersionsInfo).node}</span>
@@ -171,7 +171,7 @@ function App() {
           </div>
         )}
         
-        {/* Add note section with toggle functionality */}
+        
         {addBtn && (
           <div
             className={`mb-5 transition-all duration-200 animate-modalInOut ${isClosingAddNota ? 'animate-modalOut opacity-0 pointer-events-none' : 'animate-modalIn opacity-100'}`}
