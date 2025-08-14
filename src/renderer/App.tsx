@@ -122,10 +122,13 @@ function App() {
         {/* Add note section with toggle functionality */}
         {addBtn && (
           <div className="mb-5">
-            <AddNota onNotaAgregada={() => {
-              cargarNotas();
-              setAddBtn(false);
-            }} />
+            <AddNota
+                onNotaAgregada={() => {
+                  cargarNotas();
+                  setAddBtn(false);
+                }}
+                notasExistentes={notes.map(n => n.title)}
+             />
           </div>
         )}
 

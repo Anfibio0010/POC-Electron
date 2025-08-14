@@ -3,9 +3,10 @@ import { useState } from 'react';
 
 type AddNotaProps = {
 	onNotaAgregada?: () => void;
+	notasExistentes?: string[];
 };
 
-const AddNota: React.FC<AddNotaProps> = ({ onNotaAgregada }) => {
+const AddNota: React.FC<AddNotaProps> = ({ onNotaAgregada, notasExistentes = [] }) => {
 	const [titulo, setTitulo] = useState('');
 	const [contenido, setContenido] = useState('');
 	const [guardando, setGuardando] = useState(false);
@@ -19,6 +20,10 @@ const AddNota: React.FC<AddNotaProps> = ({ onNotaAgregada }) => {
 	const handleAddNota = async () => {
 		if (!titulo.trim() || !contenido.trim()) {
 			setError('La nota no puede estar vacia');
+			return;
+		}
+		if (notasExistentes.includes(titulo.trim())) {
+			setError('Esa nota ya existe');
 			return;
 		}
 		setError('');
