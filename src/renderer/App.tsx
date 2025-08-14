@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Nota } from './componentes/Nota';
 import AddNota from './componentes/AddNota';
 import EditNota from './componentes/EditNota';
+import NotaModal from './componentes/NotaModal';
 import { ToggleAdd } from './componentes/ToggleAdd';
 
 // Define types
@@ -28,6 +29,7 @@ function App() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [newNote, setNewNote] = useState<NewNote>({ title: '', content: '' });
   const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
+  const [selectedNote, setSelectedNote] = useState<Note | null>(null);
 
   useEffect(() => {
     // Get versions from preload script
@@ -89,6 +91,7 @@ function App() {
         content={nota.content}
         editarClick={() => setEditingNoteId(nota.id)}
         eliminarClick={deleteNote}
+        onClick={() => setSelectedNote(nota)}
       />
     );
   });
@@ -130,6 +133,9 @@ function App() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {notasEnComponente}
         </div>
+        {selectedNote && (
+          <NotaModal nota={selectedNote} onClose={() => setSelectedNote(null)} />
+        )}
 
         {notes.length === 0 && (
           <div className="text-center py-16">

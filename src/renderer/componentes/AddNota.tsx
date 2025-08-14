@@ -14,9 +14,14 @@ const AddNota: React.FC<AddNotaProps> = ({ onNotaAgregada }) => {
 		title: string;
 		content: string;
 	} | null>(null);
+	const [error, setError] = useState('');
 
 	const handleAddNota = async () => {
-		if (!titulo.trim() || !contenido.trim()) return;
+		if (!titulo.trim() || !contenido.trim()) {
+			setError('La nota no puede estar vacia');
+			return;
+		}
+		setError('');
 		setGuardando(true);
 		try {
 			await window.notasAPI.guardarNota(titulo, contenido);
@@ -38,7 +43,15 @@ const AddNota: React.FC<AddNotaProps> = ({ onNotaAgregada }) => {
 	return (
 		<div className="bg-white rounded-lg shadow-md p-6 mb-8">
 			<h2 className="text-xl font-semibold text-gray-800 mb-4">Add New Note</h2>
-			<div className="space-y-4">
+					<div className="space-y-4">
+								{error && (
+									<div className="text-red-500 text-sm mb-2 transition-opacity duration-300 animate-fadeIn">{error}
+										<style>{`
+											@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+											.animate-fadeIn { animation: fadeIn 0.3s; }
+										`}</style>
+									</div>
+								)}
 				<input
 					type="text"
 					placeholder="Note title..."
