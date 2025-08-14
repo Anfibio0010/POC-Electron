@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Nota } from './componentes/Nota';
 import AddNota from './componentes/AddNota';
+import EditNota from './componentes/EditNota';
 import { ToggleAdd } from './componentes/ToggleAdd';
 
 // Define types
@@ -66,13 +67,27 @@ function App() {
     await cargarNotas();
   };
   const notasEnComponente = notes.map((nota) => {
+    if (editingNoteId === nota.id) {
+      return (
+        <EditNota
+          key={nota.id}
+          nota={nota}
+          onGuardar={async (titulo, contenido) => {
+            await window.notasAPI.guardarNota(titulo, contenido);
+            setEditingNoteId(null);
+            await cargarNotas();
+          }}
+          onCancelar={() => setEditingNoteId(null)}
+        />
+      );
+    }
     return (
       <Nota
         key={nota.id}
         id={nota.id}
         title={nota.title}
         content={nota.content}
-        editarClick={() => console.log(`Edit note ${nota.id}`)}
+        editarClick={() => setEditingNoteId(nota.id)}
         eliminarClick={deleteNote}
       />
     );
