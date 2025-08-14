@@ -26,7 +26,9 @@ interface NewNote {
 function App() {
   const [versions, setVersions] = useState<VersionsInfo | {}>({});
   const [addBtn, setAddBtn] = useState(false);
+  const [isClosingAddNota, setIsClosingAddNota] = useState(false);
   const [notes, setNotes] = useState<Note[]>([]);
+  const [deletingIds, setDeletingIds] = useState<Set<number>>(new Set());
   const [newNote, setNewNote] = useState<NewNote>({ title: '', content: '' });
   const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
@@ -83,18 +85,51 @@ function App() {
         />
       );
     }
+    const handleEliminarConAnimacion = (id: number) => {
+      setDeletingIds(prev => {
+        const next = new Set(prev);
+        next.add(id);
+        return next;
+      });
+      setTimeout(async () => {
+        await deleteNote(id);
+        setDeletingIds(prev => {
+          const next = new Set(prev);
+          next.delete(id);
+          return next;
+        });
+      }, 200);
+    };
     return (
-      <Nota
+      <div
         key={nota.id}
-        id={nota.id}
-        title={nota.title}
-        content={nota.content}
-        editarClick={() => setEditingNoteId(nota.id)}
-        eliminarClick={deleteNote}
-        onClick={() => setSelectedNote(nota)}
-      />
+        className={`${deletingIds.has(nota.id) ? 'animate-noteOut pointer-events-none' : ''}`}
+      >
+        <Nota
+          id={nota.id}
+          title={nota.title}
+          content={nota.content}
+          editarClick={() => setEditingNoteId(nota.id)}
+          eliminarClick={handleEliminarConAnimacion}
+          onClick={() => setSelectedNote(nota)}
+        />
+      </div>
     );
   });
+  // Animación de salida para AddNota
+  const handleOpenAddNota = () => {
+    setAddBtn(true);
+    setIsClosingAddNota(false);
+  };
+
+  const handleCloseAddNota = () => {
+    setIsClosingAddNota(true);
+    setTimeout(() => {
+      setAddBtn(false);
+      setIsClosingAddNota(false);
+    }, 100); // Duración de la animación de salida
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-4xl mx-auto">
@@ -106,7 +141,24 @@ function App() {
             📝 Nota Fácil
           </h1>
           <div className="justify-self-end">
-            <ToggleAdd addBtn={addBtn} setAddBtn={setAddBtn} />
+            <button
+              type="button"
+              onClick={() => {
+                if (addBtn) {
+                  setIsClosingAddNota(true);
+                  setTimeout(() => {
+                    setAddBtn(false);
+                    setIsClosingAddNota(false);
+                  }, 200);
+                } else {
+                  setAddBtn(true);
+                  setIsClosingAddNota(false);
+                }
+              }}
+              className={`inline-flex items-center gap-2 rounded-lg border-2 border-blue-600 font-semibold bg-blue-600 px-4 py-2 text-white hover:bg-blue-100 hover:text-blue-600 transition-colors justify-self-end`}
+            >
+              {addBtn ? 'Cancelar' : 'Nueva nota +'}
+            </button>
           </div>
         </div>
         
@@ -121,14 +173,24 @@ function App() {
         
         {/* Add note section with toggle functionality */}
         {addBtn && (
-          <div className="mb-5">
+          <div
+            className={`mb-5 transition-all duration-200 animate-modalInOut ${isClosingAddNota ? 'animate-modalOut opacity-0 pointer-events-none' : 'animate-modalIn opacity-100'}`}
+          >
             <AddNota
-                onNotaAgregada={() => {
-                  cargarNotas();
-                  setAddBtn(false);
-                }}
-                notasExistentes={notes.map(n => n.title)}
-             />
+              onNotaAgregada={() => {
+                cargarNotas();
+                handleCloseAddNota();
+              }}
+              notasExistentes={notes.map(n => n.title)}
+              onClose={handleCloseAddNota}
+              isClosing={isClosingAddNota}
+            />
+            <style>{`
+              @keyframes modalIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+              @keyframes modalOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(20px); } }
+              .animate-modalIn { animation: modalIn 0.2s; }
+              .animate-modalOut { animation: modalOut 0.2s; }
+            `}</style>
           </div>
         )}
 
@@ -136,6 +198,10 @@ function App() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {notasEnComponente}
         </div>
+        <style>{`
+          @keyframes noteOut { from { opacity: 1; } to { opacity: 0; } }
+          .animate-noteOut { animation: noteOut 0.2s ease forwards; }
+        `}</style>
         {selectedNote && (
           <NotaModal nota={selectedNote} onClose={() => setSelectedNote(null)} />
         )}

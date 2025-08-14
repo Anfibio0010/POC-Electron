@@ -4,17 +4,14 @@ import { useState } from 'react';
 type AddNotaProps = {
 	onNotaAgregada?: () => void;
 	notasExistentes?: string[];
+	onClose?: () => void;
+	isClosing?: boolean;
 };
 
-const AddNota: React.FC<AddNotaProps> = ({ onNotaAgregada, notasExistentes = [] }) => {
+const AddNota: React.FC<AddNotaProps> = ({ onNotaAgregada, notasExistentes = [], onClose, isClosing }) => {
 	const [titulo, setTitulo] = useState('');
 	const [contenido, setContenido] = useState('');
 	const [guardando, setGuardando] = useState(false);
-	const [ultimaNota, setUltimaNota] = useState<{
-		id: number;
-		title: string;
-		content: string;
-	} | null>(null);
 	const [error, setError] = useState('');
 
 	const handleAddNota = async () => {
@@ -30,12 +27,6 @@ const AddNota: React.FC<AddNotaProps> = ({ onNotaAgregada, notasExistentes = [] 
 		setGuardando(true);
 		try {
 			await window.notasAPI.guardarNota(titulo, contenido);
-			const nuevaNota = {
-				id: Date.now(),
-				title: titulo,
-				content: contenido,
-			};
-			setUltimaNota(nuevaNota);
 			setTitulo('');
 			setContenido('');
 			if (onNotaAgregada) onNotaAgregada();
@@ -46,7 +37,7 @@ const AddNota: React.FC<AddNotaProps> = ({ onNotaAgregada, notasExistentes = [] 
 	};
 
 	return (
-		<div className="bg-white rounded-lg shadow-md p-6 mb-8">
+		<div className={`bg-white rounded-lg shadow-md p-6 mb-8 transition-all duration-100 relative`}> 
 			<h2 className="text-xl font-semibold text-gray-800 mb-4">Add New Note</h2>
 					<div className="space-y-4">
 								{error && (
@@ -57,27 +48,33 @@ const AddNota: React.FC<AddNotaProps> = ({ onNotaAgregada, notasExistentes = [] 
 										`}</style>
 									</div>
 								)}
-				<input
-					type="text"
-					placeholder="Note title..."
-					value={titulo}
-					onChange={e => setTitulo(e.target.value)}
-					className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-				/>
-				<textarea
-					placeholder="Note content..."
-					value={contenido}
-					onChange={e => setContenido(e.target.value)}
-					rows={4}
-					className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"
-				/>
-				<button
-					onClick={handleAddNota}
-					className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors duration-200 font-medium"
-					disabled={guardando}
-				>
-					{guardando ? 'Saving...' : 'Add Note'}
-				</button>
+							<input
+								type="text"
+								placeholder="Note title..."
+								value={titulo}
+					onChange={e => {
+						setTitulo(e.target.value);
+					}}
+								className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+							/>
+							<textarea
+								placeholder="Note content..."
+								value={contenido}
+					onChange={e => {
+						setContenido(e.target.value);
+					}}
+								rows={4}
+								className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"
+							/>
+						<div className="flex gap-2">
+							<button
+								onClick={handleAddNota}
+								className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors duration-200 font-medium"
+								disabled={guardando}
+							>
+								{guardando ? 'Saving...' : 'Add Note'}
+							</button>
+						</div>
 			</div>
 			
 		</div>
