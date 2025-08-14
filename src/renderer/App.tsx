@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Nota } from './componentes/Nota.js'; // Import the Nota component
+import { AddNota } from './componentes/AddNota.js';
+import { ToggleAdd } from './componentes/ToggleAdd.js';
 
 // Define types
 interface VersionsInfo {
@@ -20,7 +22,7 @@ interface NewNote {
 }
 
 function App() {
-  const [versions, setVersions] = useState<VersionsInfo | {}>({});
+  const [addBtn, setAddBtn] = useState(false);
   const [notes, setNotes] = useState<Note[]>([
     { id: 1, title: 'Welcome', content: 'Bienvenido a la app de notas!' },
     {
@@ -30,17 +32,7 @@ function App() {
     },
   ]);
   const [newNote, setNewNote] = useState<NewNote>({ title: '', content: '' });
-
-  useEffect(() => {
-    // Get versions from preload script
-    if (window.versions) {
-      setVersions({
-        node: window.versions.node(),
-        chrome: window.versions.chrome(),
-        electron: window.versions.electron(),
-      } as VersionsInfo);
-    }
-  }, []);
+  const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
 
   const addNote = (): void => {
     if (newNote.title.trim() && newNote.content.trim()) {
@@ -73,56 +65,28 @@ function App() {
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">
-            📝 Notes App
+        <div className="mb-8 grid grid-cols-[1fr_auto_1fr] items-center">
+          {/* Empty left spacer to allow perfect centering */}
+          <div></div>
+          <h1 className="text-4xl font-bold text-center text-gray-800">
+            📝 Nota Fácil
           </h1>
-          <p className="text-gray-600">
-            Built with Electron + React + Vite + Tailwind
-          </p>
-
-          {/* Version info */}
-          {Object.keys(versions).length > 0 && (
-            <div className="mt-4 text-sm text-gray-500 space-x-4">
-              <span>Node: {(versions as VersionsInfo).node}</span>
-              <span>Chrome: {(versions as VersionsInfo).chrome}</span>
-              <span>Electron: {(versions as VersionsInfo).electron}</span>
-            </div>
-          )}
-        </div>
-
-        {/* Add new note form */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">
-            Add New Note
-          </h2>
-          <div className="space-y-4">
-            <input
-              type="text"
-              placeholder="Note title..."
-              value={newNote.title}
-              onChange={(e) =>
-                setNewNote({ ...newNote, title: e.target.value })
-              }
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-            />
-            <textarea
-              placeholder="Note content..."
-              value={newNote.content}
-              onChange={(e) =>
-                setNewNote({ ...newNote, content: e.target.value })
-              }
-              rows={4}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"
-            />
-            <button
-              onClick={addNote}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors duration-200 font-medium"
-            >
-              Add Note
-            </button>
+          <div className="justify-self-end">
+            <ToggleAdd addBtn={addBtn} setAddBtn={setAddBtn} />
           </div>
         </div>
+        {addBtn && (
+          <div className="mb-5">
+            <AddNota
+              newNote={newNote}
+              setNewNote={setNewNote}
+              addNote={() => {
+                addNote();
+                setAddBtn(false);
+              }}
+            />
+          </div>
+        )}
 
         {/* Notes grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
