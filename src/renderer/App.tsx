@@ -5,7 +5,6 @@ import EditNota from './componentes/EditNota';
 import NotaModal from './componentes/NotaModal';
 import { ToggleAdd } from './componentes/ToggleAdd';
 
-
 interface VersionsInfo {
   node: string;
   chrome: string;
@@ -24,7 +23,6 @@ interface NewNote {
 }
 
 function App() {
-  const [versions, setVersions] = useState<VersionsInfo | {}>({});
   const [addBtn, setAddBtn] = useState(false);
   const [isClosingAddNota, setIsClosingAddNota] = useState(false);
   const [notes, setNotes] = useState<Note[]>([]);
@@ -34,25 +32,18 @@ function App() {
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
 
   useEffect(() => {
-    
-    if (window.versions) {
-      setVersions({
-        node: window.versions.node(),
-        chrome: window.versions.chrome(),
-        electron: window.versions.electron(),
-      } as VersionsInfo);
-    }
-    
+    //Carga las notas
     cargarNotas();
   }, []);
 
+  // ...existing code...
   const cargarNotas = async () => {
     try {
       const notas = await window.notasAPI.leerNotas();
-      
+
       setNotes(
         notas.map((n, idx) => ({
-          id: Date.now() + idx,
+          id: Date.now() + idx * 1000, // Ensure unique IDs by adding more spacing
           title: n.titulo,
           content: n.contenido,
         }))
@@ -61,8 +52,6 @@ function App() {
       setNotes([]);
     }
   };
-
-  
 
   const deleteNote = async (id: number) => {
     const nota = notes.find((note) => note.id === id);
@@ -86,14 +75,14 @@ function App() {
       );
     }
     const handleEliminarConAnimacion = (id: number) => {
-      setDeletingIds(prev => {
+      setDeletingIds((prev) => {
         const next = new Set(prev);
         next.add(id);
         return next;
       });
       setTimeout(async () => {
         await deleteNote(id);
-        setDeletingIds(prev => {
+        setDeletingIds((prev) => {
           const next = new Set(prev);
           next.delete(id);
           return next;
@@ -103,7 +92,9 @@ function App() {
     return (
       <div
         key={nota.id}
-        className={`${deletingIds.has(nota.id) ? 'animate-noteOut pointer-events-none' : ''}`}
+        className={`${
+          deletingIds.has(nota.id) ? 'animate-noteOut pointer-events-none' : ''
+        }`}
       >
         <Nota
           id={nota.id}
@@ -116,7 +107,7 @@ function App() {
       </div>
     );
   });
-  
+
   const handleOpenAddNota = () => {
     setAddBtn(true);
     setIsClosingAddNota(false);
@@ -134,54 +125,78 @@ function App() {
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-4xl mx-auto">
         {/* Header with toggle button layout from Componetizo */}
-        <div className="mb-8 grid grid-cols-[1fr_auto_1fr] items-center">
-          {/* Empty left spacer to allow perfect centering */}
-          <div></div>
-          <h1 className="text-4xl font-bold text-center text-gray-800">
-            📝 Nota Fácil
-          </h1>
-          <div className="justify-self-end">
-            <button
-              type="button"
-              onClick={() => {
-                if (addBtn) {
-                  setIsClosingAddNota(true);
-                  setTimeout(() => {
-                    setAddBtn(false);
+        <div className="mb-8">
+          {/* Mobile layout */}
+          <div className="block sm:hidden">
+            <h1 className="text-3xl font-bold text-center text-gray-800 mb-4">
+              📝 Nota Fácil
+            </h1>
+            <div className="flex justify-center">
+              <button
+                type="button"
+                onClick={() => {
+                  if (addBtn) {
+                    setIsClosingAddNota(true);
+                    setTimeout(() => {
+                      setAddBtn(false);
+                      setIsClosingAddNota(false);
+                    }, 200);
+                  } else {
+                    setAddBtn(true);
                     setIsClosingAddNota(false);
-                  }, 200);
-                } else {
-                  setAddBtn(true);
-                  setIsClosingAddNota(false);
-                }
-              }}
-              className={`inline-flex items-center gap-2 rounded-lg border-2 border-blue-600 font-semibold bg-blue-600 px-4 py-2 text-white hover:bg-blue-100 hover:text-blue-600 transition-colors justify-self-end`}
-            >
-              {addBtn ? 'Cancelar' : 'Nueva nota +'}
-            </button>
+                  }
+                }}
+                className={`inline-flex items-center gap-2 rounded-lg border-2 border-blue-600 font-semibold bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-100 hover:text-blue-600 transition-colors`}
+              >
+                {addBtn ? 'Cancelar' : 'Nueva nota +'}
+              </button>
+            </div>
+          </div>
+
+          {/* Desktop layout */}
+          <div className="hidden sm:grid grid-cols-[1fr_auto_1fr] items-center">
+            {/* Empty left spacer to allow perfect centering */}
+            <div></div>
+            <h1 className="text-4xl font-bold text-center text-gray-800">
+              📝 Nota Fácil
+            </h1>
+            <div className="justify-self-end">
+              <button
+                type="button"
+                onClick={() => {
+                  if (addBtn) {
+                    setIsClosingAddNota(true);
+                    setTimeout(() => {
+                      setAddBtn(false);
+                      setIsClosingAddNota(false);
+                    }, 200);
+                  } else {
+                    setAddBtn(true);
+                    setIsClosingAddNota(false);
+                  }
+                }}
+                className={`inline-flex items-center gap-2 rounded-lg border-2 border-blue-600 font-semibold bg-blue-600 px-4 py-2 text-white hover:bg-blue-100 hover:text-blue-600 transition-colors justify-self-end`}
+              >
+                {addBtn ? 'Cancelar' : 'Nueva nota +'}
+              </button>
+            </div>
           </div>
         </div>
-        
-        
-        {Object.keys(versions).length > 0 && (
-          <div className="mb-4 text-center text-sm text-gray-500 space-x-4">
-            <span>Node: {(versions as VersionsInfo).node}</span>
-            <span>Chrome: {(versions as VersionsInfo).chrome}</span>
-            <span>Electron: {(versions as VersionsInfo).electron}</span>
-          </div>
-        )}
-        
-        
+
         {addBtn && (
           <div
-            className={`mb-5 transition-all duration-200 animate-modalInOut ${isClosingAddNota ? 'animate-modalOut opacity-0 pointer-events-none' : 'animate-modalIn opacity-100'}`}
+            className={`mb-5 transition-all duration-200 animate-modalInOut ${
+              isClosingAddNota
+                ? 'animate-modalOut opacity-0 pointer-events-none'
+                : 'animate-modalIn opacity-100'
+            }`}
           >
             <AddNota
               onNotaAgregada={() => {
                 cargarNotas();
                 handleCloseAddNota();
               }}
-              notasExistentes={notes.map(n => n.title)}
+              notasExistentes={notes.map((n) => n.title)}
               onClose={handleCloseAddNota}
               isClosing={isClosingAddNota}
             />
@@ -194,7 +209,6 @@ function App() {
           </div>
         )}
 
-        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {notasEnComponente}
         </div>
@@ -203,13 +217,16 @@ function App() {
           .animate-noteOut { animation: noteOut 0.2s ease forwards; }
         `}</style>
         {selectedNote && (
-          <NotaModal nota={selectedNote} onClose={() => setSelectedNote(null)} />
+          <NotaModal
+            nota={selectedNote}
+            onClose={() => setSelectedNote(null)}
+          />
         )}
 
         {notes.length === 0 && (
           <div className="text-center py-16">
             <p className="text-gray-500 text-lg">
-              No notes yet. Create your first note above!
+              No hay notas todavía. Haz clic en "Nueva nota +" para empezar.
             </p>
           </div>
         )}
