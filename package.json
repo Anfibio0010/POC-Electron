@@ -18,7 +18,10 @@
     "watch-css": "tailwindcss -i ./src/renderer/index.css -o ./ui/dist/styles.css --watch",
     "test": "echo \"Error: no test specified\" && exit 1",
     "package": "electron-forge package",
-    "make": "electron-forge make"
+    "make": "electron-forge make",
+    "build:win": "electron-builder --win",
+    "build:win32": "electron-builder --win --ia32",
+    "build:win64": "electron-builder --win --x64"
   },
   "keywords": [],
   "author": "",
@@ -41,6 +44,7 @@
     "concurrently": "^8.2.2",
     "cross-env": "^10.0.0",
     "electron": "^37.2.6",
+    "electron-builder": "^26.0.12",
     "nodemon": "^3.1.10",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.0",
@@ -57,5 +61,47 @@
     "electron-squirrel-startup": "^1.0.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
+  },
+  "build": {
+    "appId": "com.yourcompany.poc-electron",
+    "productName": "POC Electron",
+    "directories": {
+      "output": "out"
+    },
+    "files": [
+      "dist/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "node_modules",
+        "to": "node_modules",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   }
 }
