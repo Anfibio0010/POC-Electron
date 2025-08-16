@@ -7,8 +7,6 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import fs from 'fs';
 import fsp from 'fs/promises';
 
-
-
 const createWindow = (): void => {
   const win = new BrowserWindow({
     width: 1200,
@@ -25,7 +23,7 @@ const createWindow = (): void => {
     win.loadURL('http://localhost:5174');
   } else {
     // In production, load the built files
-    win.loadFile(path.join(__dirname, '../../index.html'));
+    win.loadFile(path.join(__dirname, '../../dist/index.html'));
   }
 
   // Open DevTools in development
@@ -34,10 +32,13 @@ const createWindow = (): void => {
   }
 };
 
-
 // Carpeta donde se guardan las notas
-const notasDir = path.join(__dirname, '../../notas');
-
+const notasDir = path.join(app.getPath('userData'), 'notas');
+// Crear la carpeta dist si no existe
+// Crear la carpeta si no existe
+if (!fs.existsSync(notasDir)) {
+  fs.mkdirSync(notasDir, { recursive: true });
+}
 
 // Guardar nota
 ipcMain.handle('guardar-nota', async (_event, { titulo, contenido }) => {
@@ -61,10 +62,12 @@ ipcMain.handle('eliminar-nota', async (_event, { titulo }) => {
 ipcMain.handle('leer-notas', async () => {
   const files = await fsp.readdir(notasDir);
   const notas = await Promise.all(
-    files.filter(f => f.endsWith('.txt')).map(async (file) => {
-      const contenido = await fsp.readFile(path.join(notasDir, file), 'utf8');
-      return { titulo: file.replace('.txt', ''), contenido };
-    })
+    files
+      .filter((f) => f.endsWith('.txt'))
+      .map(async (file) => {
+        const contenido = await fsp.readFile(path.join(notasDir, file), 'utf8');
+        return { titulo: file.replace('.txt', ''), contenido };
+      })
   );
   return notas;
 });

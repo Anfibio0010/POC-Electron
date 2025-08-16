@@ -3,9 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/src/main.js",
-  
   "scripts": {
-    "start": "cross-env electron dist/src/main.js",
+    "start": "electron-forge start",
     "start:electron": "cross-env pnpm tsc && electron dist/src/main.js",
     "dev": "cross-env electron dist/src/main.js",
     "dev:watch": "cross-env nodemon --exec \"electron dist/src/main.js\" --watch dist/src/ --watch dist/ui/",
@@ -15,15 +14,25 @@
     "build": "vite build",
     "build:electron": "cross-env pnpm run build && electron .",
     "build-css": "tailwindcss -i ./src/renderer/index.css -o ./ui/dist/styles.css",
-    "build:all": "pnpm tsc && pnpm tsc -p tsconfig.preload.json",
+    "build:all": "pnpm tsc && pnpm tsc -p tsconfig.preload.json && mkdir -p notas",
     "watch-css": "tailwindcss -i ./src/renderer/index.css -o ./ui/dist/styles.css --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.6.5",
   "devDependencies": {
+    "@electron-forge/cli": "^7.8.3",
+    "@electron-forge/maker-deb": "^7.8.3",
+    "@electron-forge/maker-rpm": "^7.8.3",
+    "@electron-forge/maker-squirrel": "^7.8.3",
+    "@electron-forge/maker-zip": "^7.8.3",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.8.3",
+    "@electron-forge/plugin-fuses": "^7.8.3",
+    "@electron/fuses": "^1.8.0",
     "@types/node": "^24.2.1",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
@@ -45,6 +54,7 @@
     ]
   },
   "dependencies": {
+    "electron-squirrel-startup": "^1.0.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   }
